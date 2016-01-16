@@ -24,6 +24,8 @@ export GYP_DEFINES="clang=1"
 export CFLAGS="-fPIC$(DEBUG_SYMBOLS)"
 export CXXFLAGS="-fPIC$(DEBUG_SYMBOLS)"
 
+export PATH := $(TOP)/depot_tools:$(PATH)
+
 depot_tools:
 	git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 
@@ -39,7 +41,10 @@ v8: $(TOP)/v8
 	$(MAKE) -C v8 -j31 native
 
 libre-v8.so: v8 libre-v8.cpp
-	$(CLANG) $(VERBOSE) -fPIC -shared -std=c++11 -I$(TOP)/v8 -I$(BOOST_ROOT)/include libre-v8.cpp -o libre-v8.so -Wl,--start-group $(TOP)/v8/out/native/obj.target/{tools/gyp/libv8_{base,libbase,snapshot,libplatform},third_party/icu/libicu{uc,i18n,data}}.a -Wl,--end-group -lrt -ldl -pthread$(DEBUG_SYMBOLS)
+	$(CLANG) $(VERBOSE) -fPIC -shared -std=c++11 -I$(TOP)/v8 -I$(BOOST_ROOT)/include \
+		libre-v8.cpp -o libre-v8.so -Wl,--start-group \
+		$(TOP)/v8/out/native/obj.target/{tools/gyp/libv8_{base,libbase,external_snapshot,libplatform},third_party/icu/libicu{uc,i18n,data}}.a \
+		-Wl,--end-group -lrt -ldl -pthread$(DEBUG_SYMBOLS)
 
 
 -include /etc/irods/service_account.config
