@@ -4,14 +4,14 @@ TOP := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
 
 CLANG=/opt/irods-externals/clang3.7-0/bin/clang
 CLANGPP=/opt/irods-externals/clang3.7-0/bin/clang++
-BOOST_ROOT=/opt/irods-externals/boost1.59.0-0
+BOOST_ROOT=/opt/irods-externals/boost1.60.0-0
 
 #DEBUG_SYMBOLS=" -g"
 #VERBOSE="-v"
 
 all: libre-v8.so
 
-PHONY: all install depot_tools uninstall clean distclean
+PHONY: all depot_tools install uninstall clean distclean
 
 # from http://stackoverflow.com/questions/24817747/building-v8-with-clang-and-emitting-llvm-ir
 export CXX="$(CLANGPP)"
@@ -37,13 +37,13 @@ $(TOP)/v8: depot_tools
 		cd $(TOP) ; \
 		${TOP}/depot_tools/gclient sync
 
-v8: $(TOP)/v8
-	$(MAKE) -C v8 -j31 native
+$(TOP)/v8/out/native/obj.target/build/All.stamp: $(TOP)/v8
+	$(MAKE) -C v8 native
 
-libre-v8.so: v8 libre-v8.cpp
+libre-v8.so: $(TOP)/v8/out/native/obj.target/build/All.stamp libre-v8.cpp
 	$(CLANG) $(VERBOSE) -fPIC -shared -std=c++11 -I$(TOP)/v8 -I$(BOOST_ROOT)/include \
 		libre-v8.cpp -o libre-v8.so -Wl,--start-group \
-		$(TOP)/v8/out/native/obj.target/{tools/gyp/libv8_{base,libbase,external_snapshot,libplatform},third_party/icu/libicu{uc,i18n,data}}.a \
+		$(TOP)/v8/out/native/obj.target/{tools/gyp/libv8_{base,libbase,snapshot,libplatform},third_party/icu/libicu{uc,i18n,data}}.a \
 		-Wl,--end-group -lrt -ldl -pthread$(DEBUG_SYMBOLS)
 
 
