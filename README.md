@@ -62,3 +62,9 @@ point of the same name and writes to the standard iRODS log file.  Then it calls
 `irodsFunc1` in `custom.re` which calls back to `jsFunc1` in `core.js` which
 demonstrates some basic error handling after calling a function which has not
 been defined (`doesnotexist()`) in any rule base.
+
+Contributors
+============
+
+- Hao Xu, @xu-hao - Initial code
+- Terrell Russell, @trel - Standardization, packaging, and documentation
